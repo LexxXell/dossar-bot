@@ -1,0 +1,29 @@
+{
+  "name": "citizenship_bot",
+  "version": "1.0.0",
+  "main": "src/index.js",
+  "author": "LexxXell",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "dev": "nodemon",
+    "prod": "forever src/index.js",
+    "test": "nodemon src/test.js"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.16"
+  },
+  "dependencies": {
+    "axios": "^0.27.2",
+    "bluebird": "^3.7.2",
+    "dotenv": "^16.0.1",
+    "forever": "^4.0.3",
+    "mongoose": "^6.3.4",
+    "node-cron": "^3.0.1",
+    "node-fetch": "2.0.0",
+    "pdf-parse": "^1.1.1",
+    "telegraf": "3.39",
+    "telegraf-i18n": "^6.6.0",
+    "uuid": "^8.3.2"
+  }
+}
