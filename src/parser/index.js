@@ -361,6 +361,15 @@ async function updateOath(
 }
 
 async function processOath(updateInformCallback) {
+  const coldStart = !(
+    (await Act.find().count()) &&
+    (await Order.find().count()) &&
+    (await Application.find().count())
+  );
+
+  if (coldStart) {
+    return;
+  }
   try {
     if (typeof updateInformCallback !== "function")
       updateInformCallback = (a) => {
@@ -401,6 +410,7 @@ async function processOath(updateInformCallback) {
         }
       }
     }
+    console.log("[INFO]\x1b[32m < SUCCESS\x1b[0m");
   } catch (e) {
     console.error("[ERROR] parser " + e);
   }
@@ -454,12 +464,18 @@ async function run(
               applicationsInOrders[index].minorChildrenAmount;
         }
       }
-      await Application.insertMany(Object.values(applications));
+      const appArray = Object.values(applications);
+      if (!appArray.length) {
+        throw new Error("Applications not found...");
+      }
+      await insertApplications(appArray);
       console.log(
         (await Application.find().count()) == appllicationsIndexes.length
           ? "\x1b[32m < SUCCESS\x1b[0m"
           : "\x1b[31m < ERROR\x1b[0m"
       );
+      console.log("Adding applications from oaths...");
+      await processOath(() => {});
     } else {
       console.log("[INFO] Update of applications");
       const applicationsInAct = options.actUpdateRange
@@ -510,6 +526,33 @@ async function run(
   } catch (e) {
     console.error("[ERROR] parser " + e);
   }
+}
+
+async function insertApplications(apps) {
+  const aStep = Math.round(apps.length / 100);
+
+  let count = 0;
+  const length = apps.length;
+  process.stdout.write(
+    `\r[INFO] Insert applications in database. ${Math.round(
+      (count / length) * 100
+    )}%`
+  );
+  while (apps.length) {
+    if (apps.length >= aStep) {
+      await Application.insertMany(apps.splice(0, aStep));
+      count += aStep;
+    } else {
+      await Application.insertMany(apps.splice(0, apps.length));
+      count += apps.length + 1;
+    }
+    process.stdout.write(
+      `\r[INFO] Insert applications in database. ${Math.round(
+        (count / length) * 100
+      )}%`
+    );
+  }
+  console.log();
 }
 
 module.exports = {

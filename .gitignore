@@ -39,6 +39,10 @@ lerna-debug.log*
 /tmp
 /media
 
+/acts/*.pdf
+/orders/*.pdf
+/oath/*.pdf
+
 .cookies
 .*.env
 !.ex.env
