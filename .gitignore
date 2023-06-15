@@ -43,6 +43,8 @@ lerna-debug.log*
 /orders/*.pdf
 /oath/*.pdf
 
+*.dump.json
+
 .cookies
 .*.env
 !.ex.env
