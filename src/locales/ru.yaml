@@ -21,7 +21,7 @@ chtoken: >
   В течении 60 секунд отправьте <code>/start</code> новому боту. Если не успеете, просто повторите <code>/chtoken bot_token</code>
 
 adConsultation: |
-  <b><i>Бесплатная консультация по вопросам получения гражданства Румынии от ${owner.name}</i></b>
+  <b><i>${owner.name}</i></b>
 
   ${owner.contacts}
   ${owner.phone}
