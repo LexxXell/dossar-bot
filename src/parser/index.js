@@ -186,7 +186,7 @@ async function getApplicationArrayFromActPdf(act) {
       .replace(/\//g, '')
       .toLowerCase()
       .trim()
-      .match(/(\d+)\w{2}\d{4}(\d{2}.\d{2}.\d{4}){1,2}(\d+\w\d{2}.\d{2}.\d{4})?\n/g)) {
+      .match(/(\d+)\w{2}\d{4}(\d{2}.\d{2}.\d{4}){1,2}(\d+\w\d{2}.\d{2}.\d{4})?(\n)?/g)) {
       const appData =
         /(?<number>\d+)\w{2}(?<year>\d{4})(?<registrationDate>\d{2}.\d{2}.\d{4})(?<considerationDate>\d{2}.\d{2}.\d{4})?((?<orderName>\d+\w)(?<decisionDate>\d{2}.\d{2}.\d{4}))?/.exec(
           rawApp.replace(/\//g, ''),
@@ -465,8 +465,9 @@ async function insertApplications(apps) {
       await Application.insertMany(apps.splice(0, aStep));
       count += aStep;
     } else {
-      await Application.insertMany(apps.splice(0, apps.length));
-      count += apps.length + 1;
+      const remLength = apps.length;
+      await Application.insertMany(apps.splice(0, remLength));
+      count += remLength;
     }
     process.stdout.write(`\r[INFO] Insert applications in database. ${Math.round((count / length) * 100)}%`);
   }
@@ -476,6 +477,8 @@ async function insertApplications(apps) {
 module.exports = {
   run,
   runParseOath,
+  getApplicationArrayFromActPdf,
+  getApplicationsFromActs,
   models: {
     Order,
     Act,
