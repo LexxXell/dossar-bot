@@ -81,7 +81,6 @@ applicationInfo_oath_oathOnly: |
   </code>
   <a href="${link_oath}">Скачать PDF Присяги</a>
 
-
 applicationInfo_decision_actOnly: |
   <b><i>Поздравляем! Вы вышли в приказ.</i></b>
   <i>Заявка номер ${appNumber} от ${appYear} года</i>
@@ -122,6 +121,17 @@ applicationInfo_registration: |
   <b><i>Ваша заявка номер ${appNumber} от ${appYear} года зарегистрирована на сайте ANC</i></b>
   <code>
   Регистрация: ${registrationDate}
+  </code>
+  <a href="${link_act}">Скачать PDF Стадиу</a>
+
+applicationInfo_negative: |
+  <b><i>Ваша заявка номер ${appNumber} от ${appYear} года зарегистрирована на сайте ANC</i></b>
+
+  К сожалению, ваша завка отправлена на - <b>ДОЗАПРОС</b>
+
+  <code>
+  Регистрация: ${registrationDate}
+  Решение: ${decisionDate}
   </code>
   <a href="${link_act}">Скачать PDF Стадиу</a>
 

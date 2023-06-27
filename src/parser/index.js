@@ -389,26 +389,32 @@ async function run(updateInformCallback = (application) => {}, options = { actUp
     await updateOrders(orders);
     if (coldStart) {
       console.log('\x1b[33m[INFO] ColdStart detected. Initialized full database update.\x1b[0m');
-      const applications = await getApplicationsFromActs();
+      const applicationsInActs = await getApplicationsFromActs();
       const applicationsInOrders = await getApplicationsFromOrders();
-      const appllicationsIndexes = Object.keys(applications);
+      const applicationsInActsIndexes = Object.keys(applicationsInActs);
       const applicationsInOrdersIndexes = Object.keys(applicationsInOrders);
-      for await (const index of applicationsInOrdersIndexes) {
-        if (appllicationsIndexes.indexOf(index) !== -1) {
-          applications[index].orderIndex = applicationsInOrders[index].orderIndex;
-          if (!applications[index].decisionDate)
-            applications[index].decisionDate = applicationsInOrders[index].decisionDate;
-          if (applicationsInOrders[index].minorChildrenAmount)
-            applications[index].minorChildrenAmount = applicationsInOrders[index].minorChildrenAmount;
+      const applicationsIndexes = [...new Set(applicationsInActsIndexes.concat(applicationsInOrdersIndexes).sort())];
+      const appArray = [];
+      for (let appIndex of applicationsIndexes) {
+        const application = applicationsInActs[appIndex]
+          ? applicationsInActs[appIndex]
+          : applicationsInOrders[appIndex];
+        if (applicationsInActs[appIndex] && !applicationsInOrders[appIndex]) {
+          if (applicationsInActs[appIndex].decisionDate) application.negative = true;
+        } else {
+          application.orderIndex = applicationsInOrders[appIndex].orderIndex;
+          application.decisionDate = applicationsInOrders[appIndex].decisionDate;
+          if (applicationsInOrders[appIndex].minorChildrenAmount)
+            application.minorChildrenAmount = applicationsInOrders[appIndex].minorChildrenAmount;
         }
+        appArray.push(application);
       }
-      const appArray = Object.values(applications);
       if (!appArray.length) {
         throw new Error('Applications not found...');
       }
       await insertApplications(appArray);
       console.log(
-        (await Application.find().count()) == appllicationsIndexes.length
+        (await Application.find().count()) == applicationsIndexes.length
           ? '\x1b[32m < SUCCESS\x1b[0m'
           : '\x1b[31m < ERROR\x1b[0m',
       );
@@ -438,6 +444,7 @@ async function run(updateInformCallback = (application) => {}, options = { actUp
             if (applicationData.considerationDate) application.considerationDate = applicationData.considerationDate;
             if (applicationData.registrationDate) application.registrationDate = applicationData.registrationDate;
             if (applicationData.decisionDate) application.decisionDate = applicationData.decisionDate;
+            if (applicationData.decisionDate && !applicationsInOrders[index]) application.negative = true;
             if (applicationData.orderIndex) application.orderIndex = applicationData.orderIndex;
             if (applicationData.actYear) application.actYear = applicationData.actYear;
             await application.save();
