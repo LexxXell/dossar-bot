@@ -8,6 +8,7 @@ module.exports = mongoose.model(
     considerationDate: String(),
     decisionDate: String(),
     negative: { type: Boolean, default: false },
+    subrequest: { type: Boolean, default: false },
     minorChildrenAmount: Number(),
     orderIndex: String(),
     actYear: String(),

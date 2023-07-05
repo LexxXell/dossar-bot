@@ -266,30 +266,34 @@ async function getApplicationsFromOrders() {
 }
 
 async function getOathFromSite() {
-  const oath = [];
-  for (const line of (await getHtmlFromUrl(oathUrl))
-    .normalize('NFKD')
-    .replace(/\s+/g, ' ')
-    .match(/(?<=<a href="#1576651821062-52dd0897-6698").+?(<\/p> <\/div> <\/div> <\/div>)/gs)[0]
-    .match(/(<a href=".+?\.pdf">).+?\d{2}\.\d{2}\.\d{4}.+?(\d{1,2}.\d{2})/g)) {
-    const { link, fileName, date, time } =
-      /<a href="(?<link>.+?(?<fileName>(?<=\/)(.[^/]+).pdf))">.+?(?<date>\d{2}\.\d{2}\.\d{4}).+?(?<time>\d{1,2}.\d{2})/.exec(
-        line,
+  try {
+    const oath = [];
+    for (const line of (await getHtmlFromUrl(oathUrl))
+      .normalize('NFKD')
+      .replace(/\s+/g, ' ')
+      .match(/(?<=<a href="#1576651821062-52dd0897-6698").+?(<\/p> <\/div> <\/div> <\/div>)/gs)[0]
+      .match(/(<a href=".+?\.pdf">).+?\d{2}\.\d{2}\.\d{4}.+?(\d{1,2}.\d{2})/g)) {
+      const { link, fileName, date, time } =
+        /<a href="(?<link>.+?(?<fileName>(?<=\/)(.[^/]+).pdf))">.+?(?<date>\d{2}\.\d{2}\.\d{4}).+?(?<time>\d{1,2}.\d{2})/.exec(
+          line,
+        ).groups;
+      const { d, M, y, h, m } = /(?<d>\d{2}).(?<M>\d{2}).(?<y>\d{4}).(?<h>\d{1,2}).(?<m>\d{2})/.exec(
+        `${date} ${time}`,
       ).groups;
-    const { d, M, y, h, m } = /(?<d>\d{2}).(?<M>\d{2}).(?<y>\d{4}).(?<h>\d{1,2}).(?<m>\d{2})/.exec(
-      `${date} ${time}`,
-    ).groups;
-    const oathDateTime = Number(Date.parse(`${M}/${d}/${y} ${h}:${m}:00`));
-    if (oathDateTime >= Number(Date.now())) {
-      oath.push({
-        link,
-        filePath: path.resolve(oathDirectoryPath, fileName),
-        dateTime: oathDateTime,
-      });
+      const oathDateTime = Number(Date.parse(`${M}/${d}/${y} ${h}:${m}:00`));
+      if (oathDateTime >= Number(Date.now())) {
+        oath.push({
+          link,
+          filePath: path.resolve(oathDirectoryPath, fileName),
+          dateTime: oathDateTime,
+        });
+      }
     }
+    console.log(`[INFO] getOathFromSite: Find ${oath.length} actual files`);
+    return oath;
+  } catch (e) {
+    console.log(`[ERROR] getOathFromSite `, e);
   }
-  console.log(`[INFO] getOathFromSite: Find ${oath.length} actual files`);
-  return oath;
 }
 
 async function updateOath(oathArray = [{ dateTime: String(), link: String(), filePath: String() }]) {
@@ -444,6 +448,7 @@ async function run(updateInformCallback = (application) => {}, options = { actUp
             if (applicationData.considerationDate) application.considerationDate = applicationData.considerationDate;
             if (applicationData.registrationDate) application.registrationDate = applicationData.registrationDate;
             if (applicationData.decisionDate) application.decisionDate = applicationData.decisionDate;
+            if (application.considerationDate != applicationData.considerationDate) application.subrequest = true;
             if (applicationData.decisionDate && !applicationsInOrders[index]) application.negative = true;
             if (applicationData.orderIndex) application.orderIndex = applicationData.orderIndex;
             if (applicationData.actYear) application.actYear = applicationData.actYear;

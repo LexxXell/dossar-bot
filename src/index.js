@@ -180,7 +180,11 @@ async function main() {
           } else {
             message = ctx.i18n.t('applicationInfo_negative', messageData);
           }
-        else if (application.considerationDate) message = ctx.i18n.t('applicationInfo_consideration', messageData);
+        else if (application.considerationDate)
+          message = ctx.i18n.t(
+            application.subrequest ? 'applicationInfo_consideration_subrequest' : 'applicationInfo_consideration',
+            messageData,
+          );
         else if (application.registrationDate) message = ctx.i18n.t('applicationInfo_registration', messageData);
         return ctx.replyWithHTML(
           message,
