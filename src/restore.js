@@ -58,6 +58,7 @@ async function restore() {
       continue;
     }
     applicationInstance.subscribers = app.subscribers;
+    applicationInstance.subrequest = app.subrequest;
     await applicationInstance.save();
   }
 }

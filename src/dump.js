@@ -16,7 +16,12 @@ async function dump() {
     phone: botOwner.phone,
   };
 
-  const appsWithSub = await parser.models.Application.find({ subscribers: { $ne: [] } });
+  const appsWithSub = await parser.models.Application.find({
+    $or: [
+      { subscribers: { $ne: [] } }, // Условие наличия подписчиков
+      { subrequest: true }, // Что есть дозапрос
+    ],
+  });
   const applications = [];
   for (let app of appsWithSub) {
     applications.push({
