@@ -20,6 +20,7 @@ async function dump() {
     $or: [
       { subscribers: { $ne: [] } }, // Условие наличия подписчиков
       { subrequest: true }, // Что есть дозапрос
+      { oathDateTime: { $ge: Date.now() } },
     ],
   });
   const applications = [];
@@ -27,6 +28,7 @@ async function dump() {
     applications.push({
       index: app.index,
       subscribers: app.subscribers,
+      oathDateTime: app.oathDateTime,
     });
   }
 

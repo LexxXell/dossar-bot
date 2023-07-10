@@ -59,6 +59,7 @@ async function restore() {
     }
     applicationInstance.subscribers = app.subscribers;
     applicationInstance.subrequest = app.subrequest;
+    applicationInstance.oathDateTime = app.oathDateTime;
     await applicationInstance.save();
   }
 }
