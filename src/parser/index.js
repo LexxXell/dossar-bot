@@ -93,8 +93,9 @@ async function getOrdersFromSite() {
   }
 }
 
-async function updateActs(actsArray = [{ year: Number(), filePath: String(), link: String() }]) {
+async function updateActs(actsArray = [{ year: Number(), filePath: String(), link: String() }], actsRange = 0) {
   try {
+    const currentYear = new Date().getFullYear();
     if (!actsArray.length) throw Error('actsArray is empty');
     const acts = await Act.find();
     if (acts.length != actsArray.length)
@@ -110,7 +111,7 @@ async function updateActs(actsArray = [{ year: Number(), filePath: String(), lin
     for await (const _act of actsArray) {
       const act = (await Act.findOne({ year: _act.year })) || (await Act.create(_act));
       console.log(`[INFO] Updating Act by ${act.year} year`);
-      if (act.link != _act.link) {
+      if (act.link != _act.link || act.year >= currentYear - actsRange) {
         try {
           fs.unlinkSync(act.filePath);
         } catch {}
@@ -389,7 +390,7 @@ async function run(updateInformCallback = (application) => {}, options = { actUp
     }
     const acts = await getActsFromSite();
     const orders = await getOrdersFromSite();
-    await updateActs(acts);
+    await updateActs(acts, options.actUpdateRange);
     await updateOrders(orders);
     if (coldStart) {
       console.log('\x1b[33m[INFO] ColdStart detected. Initialized full database update.\x1b[0m');
@@ -445,10 +446,11 @@ async function run(updateInformCallback = (application) => {}, options = { actUp
             application.considerationDate != applicationData.considerationDate ||
             application.registrationDate != applicationData.registrationDate
           ) {
+            if (application.considerationDate && application.considerationDate != applicationData.considerationDate)
+              application.subrequest = true;
             if (applicationData.considerationDate) application.considerationDate = applicationData.considerationDate;
             if (applicationData.registrationDate) application.registrationDate = applicationData.registrationDate;
             if (applicationData.decisionDate) application.decisionDate = applicationData.decisionDate;
-            if (application.considerationDate != applicationData.considerationDate) application.subrequest = true;
             if (applicationData.decisionDate && !applicationsInOrders[index]) application.negative = true;
             if (applicationData.orderIndex) application.orderIndex = applicationData.orderIndex;
             if (applicationData.actYear) application.actYear = applicationData.actYear;
@@ -491,6 +493,9 @@ module.exports = {
   runParseOath,
   getApplicationArrayFromActPdf,
   getApplicationsFromActs,
+  getActsFromSite,
+  updateActs,
+  insertApplications,
   models: {
     Order,
     Act,
