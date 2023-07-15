@@ -229,7 +229,7 @@ async function main() {
           };
           const { appNumber, appYear } = /(?<appNumber>\d+)(?<appYear>\d{4})/.exec(application.index).groups;
           await ctx.replyWithHTML(
-            ctx.i18n.t('subscriberInfo', {
+            ctx.i18n.t(application.subrequest ? 'subscriberInfo_subrequest' : 'subscriberInfo', {
               applicationNumber: appNumber,
               applicationYear: appYear,
             }),

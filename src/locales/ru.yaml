@@ -118,7 +118,7 @@ applicationInfo_consideration: |
   <a href="${link_act}">Скачать PDF Стадиу</a>
 
 applicationInfo_consideration_subrequest: |
-  <b><i>Ваша заявка номер ${appNumber} от ${appYear} года изменила статус (ДОЗАПРОС)</i></b>
+  <b><i>Ваша заявка номер ${appNumber} от ${appYear} статус ДОЗАПРОС</i></b>
   <code>
   Регистрация: ${registrationDate}
   🔹Рассмотрение: ${considerationDate}
@@ -158,6 +158,9 @@ noSubscribeList: |
 
 subscriberInfo: |
   <b>Заявка ${applicationNumber} от ${applicationYear} изменила статус</b>
+
+subscriberInfo_subrequest: |
+  <b>Заявка ${applicationNumber} от ${applicationYear} изменила статус (ДОЗАПРОС)</b>
 
 error: >
   Непредвиденная ошибка. Обратитесь к администратору.
