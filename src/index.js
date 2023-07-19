@@ -45,7 +45,7 @@ async function main() {
             async (application) => {
               await informSubscribers(application);
             },
-            { actUpdateRange: 5 },
+            { actUpdateRange: parseInt(process.env.PARSER_ACTS_RANGE) || 5 },
           );
         });
       } catch (e) {
