@@ -451,9 +451,9 @@ async function run(updateInformCallback = (application) => {}, options = { actUp
             if (applicationData.considerationDate) application.considerationDate = applicationData.considerationDate;
             if (applicationData.registrationDate) application.registrationDate = applicationData.registrationDate;
             if (applicationData.decisionDate) application.decisionDate = applicationData.decisionDate;
-            if (applicationData.decisionDate && !applicationsInOrders[index]) application.negative = true;
             if (applicationData.orderIndex) application.orderIndex = applicationData.orderIndex;
             if (applicationData.actYear) application.actYear = applicationData.actYear;
+            application.negative = applicationData.decisionDate && !applicationData.orderIndex;
             await application.save();
             updateInformCallback(application);
           }
