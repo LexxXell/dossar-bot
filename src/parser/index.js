@@ -442,8 +442,8 @@ async function run(updateInformCallback = (application) => {}, options = { actUp
         });
         if (application) {
           if (
-            application.decisionDate != applicationData.decisionDate ||
-            application.considerationDate != applicationData.considerationDate ||
+            (application.decisionDate != applicationData.decisionDate && !application.negative) ||
+            (application.considerationDate != applicationData.considerationDate && !application.subrequest) ||
             application.registrationDate != applicationData.registrationDate
           ) {
             if (application.considerationDate && application.considerationDate != applicationData.considerationDate)
