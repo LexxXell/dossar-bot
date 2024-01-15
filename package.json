@@ -9,7 +9,7 @@
     "dev": "nodemon",
     "dump": "node src/dump.js",
     "restore": "node src/restore.js",
-    "forcefix": "node src/index.js --force-fix",
+    "forcefix": "node src/forcefix.js",
     "prod": "node src/index.js",
     "test": "node src/test.js"
   },
