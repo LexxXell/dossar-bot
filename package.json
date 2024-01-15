@@ -9,8 +9,9 @@
     "dev": "nodemon",
     "dump": "node src/dump.js",
     "restore": "node src/restore.js",
-    "prod": "forever src/index.js",
-    "test": "nodemon src/test.js"
+    "forcefix": "node src/index.js --force-fix",
+    "prod": "node src/index.js",
+    "test": "node src/test.js"
   },
   "devDependencies": {
     "nodemon": "^2.0.16"
@@ -19,7 +20,6 @@
     "axios": "^0.27.2",
     "bluebird": "^3.7.2",
     "dotenv": "^16.0.1",
-    "forever": "^4.0.3",
     "mongoose": "^6.3.4",
     "node-cron": "^3.0.1",
     "node-fetch": "2.0.0",

@@ -102,29 +102,45 @@ async function main() {
     bot.use(require('./composers/start.composer'));
     bot.use(require('./composers/subscribe.composer'));
 
+    if (/^--force-fix$/.test(process.argv[2])) {
+      bot.hears(/.+/, () => true);
+    }
+
     bot.hears(/(^\d{4}(\/| )\d+$)/, async (ctx) => {
       const [appYear, appNumber] = ctx.message.text.split(/\/| /);
       const appIndex = String(appNumber) + String(appYear);
       if (!(Number(appYear) >= parserMinYear) && Number(appYear) <= Number(new Date().getFullYear())) {
-        return await ctx.replyWithHTML(
-          ctx.i18n.t('wrongYear', {
-            minYear: parserMinYear,
-            currYear: new Date().getFullYear(),
-          }),
-        );
+        try {
+          return await ctx.replyWithHTML(
+            ctx.i18n.t('wrongYear', {
+              minYear: parserMinYear,
+              currYear: new Date().getFullYear(),
+            }),
+          );
+        } catch (e) {
+          console.error('Get Dossar Error_0', e);
+        }
       }
       const application = (await parser.models.Application.findOne({
         index: appIndex,
       })) || {
         index: appIndex,
       };
-      return (await sendApplicationInfo(application, ctx)) && ctx.session.owner
-        ? await ctx.replyWithHTML(ctx.i18n.t('adConsultation', { owner: ctx.session.owner }))
-        : true;
+      try {
+        return (await sendApplicationInfo(application, ctx)) && ctx.session.owner
+          ? await ctx.replyWithHTML(ctx.i18n.t('adConsultation', { owner: ctx.session.owner }))
+          : true;
+      } catch (e) {
+        console.error('Get Dossar Error_1', e);
+      }
     });
 
     bot.hears(/.+/, (ctx) => {
-      ctx.replyWithHTML(ctx.i18n.t('wrongInput'));
+      try {
+        ctx.replyWithHTML(ctx.i18n.t('wrongInput'));
+      } catch (e) {
+        console.error('wrongInput Error', e);
+      }
     });
 
     const sendApplicationInfo = async (application, ctx) => {
@@ -186,18 +202,23 @@ async function main() {
             messageData,
           );
         else if (application.registrationDate) message = ctx.i18n.t('applicationInfo_registration', messageData);
-        return ctx.replyWithHTML(
-          message,
-          !application.oathDateTime
-            ? !(application.subscribers && application.subscribers.indexOf(ctx.from.id) + 1)
-              ? Extra.HTML().markup((m) =>
-                  m.inlineKeyboard([m.callbackButton(ctx.i18n.t('subscribeButton'), 'sub' + application.index)]),
-                )
-              : Extra.HTML().markup((m) =>
-                  m.inlineKeyboard([m.callbackButton(ctx.i18n.t('unSubscribeButton'), 'unsub' + application.index)]),
-                )
-            : undefined,
-        );
+
+        try {
+          return ctx.replyWithHTML(
+            message,
+            !application.oathDateTime
+              ? !(application.subscribers && application.subscribers.indexOf(ctx.from.id) + 1)
+                ? Extra.HTML().markup((m) =>
+                    m.inlineKeyboard([m.callbackButton(ctx.i18n.t('subscribeButton'), 'sub' + application.index)]),
+                  )
+                : Extra.HTML().markup((m) =>
+                    m.inlineKeyboard([m.callbackButton(ctx.i18n.t('unSubscribeButton'), 'unsub' + application.index)]),
+                  )
+              : undefined,
+          );
+        } catch (e) {
+          console.error('sendApplicationInfo Error', e);
+        }
       } catch (e) {
         console.log(e);
         return await ctx.replyWithHTML(ctx.i18n.t('error'));
@@ -228,12 +249,17 @@ async function main() {
             },
           };
           const { appNumber, appYear } = /(?<appNumber>\d+)(?<appYear>\d{4})/.exec(application.index).groups;
-          await ctx.replyWithHTML(
-            ctx.i18n.t('subscriberInfo', {
-              applicationNumber: appNumber,
-              applicationYear: appYear,
-            }),
-          );
+          try {
+            await ctx.replyWithHTML(
+              ctx.i18n.t('subscriberInfo', {
+                applicationNumber: appNumber,
+                applicationYear: appYear,
+              }),
+            );
+          } catch (e) {
+            console.error('informSubscribers Error', e);
+          }
+
           await sendApplicationInfo(application, ctx);
           try {
             await callback(application, subscriber);
@@ -255,3 +281,4 @@ async function main() {
 }
 
 main();
+ctx;
