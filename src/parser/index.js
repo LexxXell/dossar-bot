@@ -15,7 +15,7 @@ const oathUrl = process.env.BOT_OATH_URL || 'http://cetatenie.just.ro/juramant/#
 const actsDirectoryPath = path.resolve(process.env.BOT_ACTS_DIR || 'acts');
 const actsUrl = process.env.BOT_ACTS_URL || 'http://cetatenie.just.ro/stadiu-dosar/#1576832773102-627a212f-45ce';
 const ordersDirectoryPath = path.resolve(process.env.BOT_ACTS_DIR || 'orders');
-const ordersUrl = process.env.BOT_ORDERS_URL || 'http://cetatenie.just.ro/ordine-articolul-11/';
+const ordersUrl = process.env.BOT_ORDERS_URL || 'http://cetatenie.just.ro/ordine-articolul-1-1/';
 
 async function downloadFile(url, path) {
   try {
@@ -362,7 +362,7 @@ async function runParseOath(updateInformCallback = (application) => {}) {
   const coldStart = !((await Act.find().count()) && (await Order.find().count()) && (await Application.find().count()));
 
   if (coldStart) {
-    console.log('[INFO] runParseOath: Detected cold start. Awain main parsing...');
+    console.log('[INFO] runParseOath: Detected cold start. Await main parsing...');
     return;
   }
 
