@@ -6,7 +6,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "dev": "nodemon",
+    "dev": "NODE_TLS_REJECT_UNAUTHORIZED=0 nodemon",
     "dump": "node src/dump.js",
     "restore": "node src/restore.js",
     "forcefix": "node src/forcefix.js",
